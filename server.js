@@ -16,13 +16,12 @@ app.post('/send-push-notifications', async (req, res) => {
         console.log(req.body);
 
         // Extract push tokens and message from notificationData
-        const { expoPushTokensList, message } = notificationData;
-        console.log(expoPushTokensList);
-        console.log(message);
+        //const { expoPushTokensList, message } = notificationData;
+        const { to, title, body, data } = notificationData;
 
         // Create the messages that you want to send to clients
         let messages = [];
-        for (let pushToken of expoPushTokensList) {
+        for (let pushToken of to) {
             // Check that all your push tokens appear to be valid Expo push tokens
             if (!Expo.isExpoPushToken(pushToken)) {
                 console.error(`Push token ${pushToken} is not a valid Expo push token`);
@@ -33,9 +32,9 @@ app.post('/send-push-notifications', async (req, res) => {
             messages.push({
                 to: pushToken,
                 sound: 'default',
-                title: message.title,
-                body: message.body,
-                data: message.data,
+                title: title,
+                body: body,
+                data: data,
             });
 
             // // Construct a message
