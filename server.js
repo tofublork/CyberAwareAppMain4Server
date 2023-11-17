@@ -13,6 +13,7 @@ app.post('/send-push-notifications', async (req, res) => {
     try {
         // Extract notificationData from the request
         const { notificationData } = req.body;
+        console.log(req.body);
 
         // Extract push tokens and message from notificationData
         const { expoPushTokensList, message } = notificationData;
