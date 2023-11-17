@@ -15,7 +15,7 @@ app.post('/send-push-notifications', async (req, res) => {
         const { notificationData } = req.body;
 
         // Extract push tokens and message from notificationData
-        const { to: expoPushTokensList, message } = notificationData;
+        const { expoPushTokensList, message } = notificationData;
         console.log(expoPushTokensList);
         console.log(message);
 
