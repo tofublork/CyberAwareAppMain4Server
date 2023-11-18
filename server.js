@@ -13,6 +13,8 @@ app.use(express.json());
 //     return details.expoPushToken; 
 // }
 
+let receiptIds = [];
+
 app.post('/send-push-notifications', async (req, res) => {
     try {
         // Extract notificationData from the request
@@ -67,7 +69,6 @@ app.post('/send-push-notifications', async (req, res) => {
             }
 
             // Handle receipts after sending notifications
-            let receiptIds = [];
             for (let ticket of tickets) {
                 // NOTE: Not all tickets have IDs; for example, tickets for notifications
                 // that could not be enqueued will have error information and no receipt ID.
