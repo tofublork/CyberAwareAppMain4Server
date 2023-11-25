@@ -9,9 +9,6 @@ const expo = new Expo();
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 
-// function extractExpoPushTokenFromReceipt(details) {
-//     return details.expoPushToken; 
-// }
 
 let receiptIds = [];
 
@@ -42,26 +39,14 @@ app.post('/send-push-notifications', async (req, res) => {
             });
         }
 
-        // The Expo push notification service accepts batches of notifications so
-        // that you don't need to send 1000 requests to send 1000 notifications. We
-        // recommend you batch your notifications to reduce the number of requests
-        // and to compress them (notifications with similar content will get
-        // compressed).
         let chunks = expo.chunkPushNotifications(messages);
         let tickets = [];
         (async () => {
-            // Send the chunks to the Expo push notification service. There are
-            // different strategies you could use. A simple one is to send one chunk at a
-            // time, which nicely spreads the load out over time:
             for (let chunk of chunks) {
                 try {
                     let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
                     console.log(ticketChunk);
                     tickets.push(...ticketChunk);
-                    // NOTE: If a ticket contains an error code in ticket.details.error, you
-                    // must handle it appropriately. The error codes are listed in the Expo
-                    // documentation:
-                    // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
                 } catch (error) {
                     console.error(error);
                 }
@@ -69,8 +54,6 @@ app.post('/send-push-notifications', async (req, res) => {
 
             // Handle receipts after sending notifications
             for (let ticket of tickets) {
-                // NOTE: Not all tickets have IDs; for example, tickets for notifications
-                // that could not be enqueued will have error information and no receipt ID.
                 if (ticket.id) {
                     receiptIds.push(ticket.id);
                 }
@@ -79,8 +62,7 @@ app.post('/send-push-notifications', async (req, res) => {
 
         let receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
         (async () => {
-            // Like sending notifications, there are different strategies you could use
-            // to retrieve batches of receipts from the Expo service.
+            // retrieve batches of receipts from the Expo service.
             for (let chunk of receiptIdChunks) {
                 try {
                     let receipts = await expo.getPushNotificationReceiptsAsync(chunk);
@@ -99,16 +81,7 @@ app.post('/send-push-notifications', async (req, res) => {
                             if (details && details.error) {
                                 // The error codes are listed in the Expo documentation:
                                 // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
-                                // You must handle the errors appropriately.
                                 console.error(`The error code is ${details.error}`);
-
-                                // Handle DeviceNotRegistered
-                                // if (details.error === 'DeviceNotRegistered') {
-                                //     const expoPushToken = extractExpoPushTokenFromReceipt(details);
-
-                                //     // Modify this part based on how you want to handle DeviceNotRegistered error
-                                //     console.log(`DeviceNotRegistered for ExpoPushToken: ${expoPushToken}`);
-                                // }
                             }
                         }
                     }
@@ -125,6 +98,3 @@ app.post('/send-push-notifications', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    //console.log(`Server is listening at http://localhost:${port}`);
-});
